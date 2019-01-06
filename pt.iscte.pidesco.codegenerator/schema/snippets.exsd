@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="pt.iscte.pidesco.codegenerator" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="pt.iscte.pidesco.codegenerator" id="snippets" name="Snippets"/>
+      </appinfo>
+      <documentation>
+         This extension point, snippets, brings the opportunity to contributors create their own snippets. To use this extension, the contributor must implement the interface UserCode. This comes with the need to implement the function addUserCode(), that returns a list of UserCodeGenerator.
+
+UserCodeGenerator only has one constructor, being so the following one:
+
+public UserCodeGenerator(HashMap&lt;String, String&gt; macroToCode, RangeScope rangeScope) { ... }
+
+This constructor will define the code that will be originated from the macro and in which range scope it will work on.
+
+-First attribute is a an HashMap&lt;String, String&gt; with the key being the macro and the value being the code.
+
+-Second attribute is an ENUM RangeScope. This ENUM will define the range scope where the macro will work inside the code and has the following options: ALL, INSIDEMETHOD, OUTSIDEMETHOD, INSIDECLASS, OUTSIDECLASS.
+
+After the implementation, the new snippets will be added at the start of the system. To have access to the respective macros, the user only needs to select the text and click on the &quot;Generate code&quot; button, and if the macro exists on the system and passes throw the range scope condition, it will be replaced by the respective code.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="snippet" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="snippet">
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":pt.iscte.pidesco.codegenerator.extensibility.UserCode"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         public class UserSnippet implements UserCode{
+	
+	@Override
+	public List&lt;UserCodeGenerator&gt; addUserCode() {
+		ArrayList&lt;UserCodeGenerator&gt; list = new ArrayList&lt;UserCodeGenerator&gt;();
+		
+		HashMap&lt;String,String&gt; hm1 = new HashMap&lt;String,String&gt;(); 
+		hm1.put(&quot;comment1&quot;, &quot;/*Comment template\n*/&quot;);
+		UserCodeGenerator usg1 = new UserCodeGenerator(hm1, RangeScope.ALL);
+		
+		list.add(usg1);
+		return list;
+	}
+}
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

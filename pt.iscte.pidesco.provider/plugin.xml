@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="id1"
+         name="name"
+         point="pt.iscte.pidesco.tool">
+      <tool
+            class="pt.iscte.pidesco.provider.ExpandTool"
+            hasState="true"
+            view="pt.iscte.pidesco.uml.view">
+      </tool>
+   </extension>
+   <extension
+         id="UmlProvider"
+         name="umlProvider"
+         point="pt.iscte.pidesco.uml.button">
+      <client
+            class="UmlProvider"
+            name="Show Parent Package">
+      </client>
+   </extension>
+
+</plugin>

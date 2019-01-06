@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Provider
+Bundle-SymbolicName: pt.iscte.pidesco.provider;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: pt.iscte.pidesco.provider.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ pt.iscte.pidesco;bundle-version="0.1.0",
+ pt.iscte.pidesco.uml
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: pt.iscte.pidesco.provider
+Bundle-ActivationPolicy: lazy
+Import-Package: pt.iscte.pidesco.projectbrowser.model,
+ pt.iscte.pidesco.uml.extensionpoint
