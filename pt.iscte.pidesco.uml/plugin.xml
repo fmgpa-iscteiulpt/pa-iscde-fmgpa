@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="pt.iscte.pidesco.uml.button" name="Button" schema="schema/pt.iscte.pidesco.uml.button.exsd"/>
+   <extension
+         id="UML"
+         name="UMLView"
+         point="pt.iscte.pidesco.view">
+      <view
+            class="pt.iscte.pidesco.uml.UmlView"
+            icon="UMLICON.png">
+      </view>
+   </extension>
+
+</plugin>
