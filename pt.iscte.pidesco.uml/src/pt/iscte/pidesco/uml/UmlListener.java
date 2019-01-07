@@ -26,8 +26,8 @@ public class UmlListener implements ProjectBrowserListener {
 		System.out.println(element.getParent() + "." + element.getName().replaceAll(".java", ""));
 		System.out.println(element.getFile());
 		BundleContext context = Activator.getContext();
-		ServiceReference<JavaEditorServices> javaE = context.getServiceReference(JavaEditorServices.class);
-		JavaEditorServices servicesJavaE = context.getService(javaE);
+		JavaEditorServices servicesJavaE = Activator.getInstance().getServicesJavaEditor();
+
 //Check to see if the element is a Package if not get is Parent until it is
 		if (element.isPackage()) {
 			System.out.println(element.getName());

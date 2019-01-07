@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.zest.core.viewers.GraphViewer;
 import org.eclipse.zest.core.viewers.IEntityConnectionStyleProvider;
@@ -51,33 +52,68 @@ public class UmlView implements PidescoView {
 	private Group buttonRow;
 	private Variable selectedVariable;
 	private UmlClass selectedUmlClass;
-	
+	private Composite viewArea;
+	private Composite innerComposite;
+	private ScrolledComposite scrolledComposite;
+	private Composite graphComposite;
+	private Map<String, Image> imageMap;
+
 	public static UmlView getInstance() {
 		return instance;
 	}
+
 	@Override
 	public void createContents(Composite viewArea, Map<String, Image> imageMap) {
-		instance=this;
+		instance = this;
+		this.viewArea = viewArea;
+		this.imageMap = imageMap;
 		viewArea.setLayout(new GridLayout(2, false));
-		currentPackage = null;
-		selectedVariable=null;
-		selectedUmlClass=null;
-		createSideButtonsComposites(viewArea);
+		selectedVariable = null;
+		selectedUmlClass = null;
+		createSideComposites(viewArea);
 		createGraphViewArea(viewArea);
-		
+
 		listener = new UmlListener(this);
 		Activator.getInstance().addUmlListener(listener);
 		Activator.getInstance().getServicesProjS().addListener(listener);
-		if(Activator.getInstance().getServicesCodeG()!=null) {
+		if (Activator.getInstance().getServicesCodeG() != null) {
 			addButtonCodeGS(Activator.getInstance().getServicesCodeG());
 		}
-		
-		
+
+		addRefreshButton();
 		viewArea.layout();
-	
+
 	}
-/*Ads a button to be use the service from the CodeGeneratorServices to create getters and setters 
-	from the last variable select in the UMLView*/
+//Ads a Button to refresh the view area
+	private void addRefreshButton() {
+		org.eclipse.swt.widgets.Button b = new org.eclipse.swt.widgets.Button(buttonRow, SWT.PUSH);
+		b.setText("Refresh");
+		buttonRow.pack();
+		b.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refresh();
+			}
+
+		});
+
+	}
+//Refreshes the view area 
+	public void refresh() {
+		for (Control control : viewArea.getChildren()) {
+			control.dispose();
+		}
+		createContents(viewArea, imageMap);
+		if (currentPackage != null) {
+			listener.doubleClick(currentPackage);
+		}
+
+	}
+
+	/*
+	 * Ads a button to be use the service from the CodeGeneratorServices to create
+	 * getters and setters from the last variable select in the UMLView
+	 */
 	private void addButtonCodeGS(CodeGeneratorServices servicesCodeG) {
 		org.eclipse.swt.widgets.Button b = new org.eclipse.swt.widgets.Button(buttonRow, SWT.PUSH);
 		b.setText("GenerateGetters&Setters");
@@ -86,22 +122,22 @@ public class UmlView implements PidescoView {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (!(currentPackage == null)) {
-					if(selectedUmlClass!=null ||selectedVariable!=null ) {
-						servicesCodeG.addSettersAndGetters(selectedUmlClass.getSourceElement().getFile().toString(), selectedVariable.getType()
-								+ " "+selectedVariable.getName());
+					if (selectedUmlClass != null || selectedVariable != null) {
+						servicesCodeG.addSettersAndGetters(selectedUmlClass.getSourceElement().getFile().toString(),
+								selectedVariable.getType() + " " + selectedVariable.getName());
 					}
-					
-					
+
 				}
 
 			}
 
 		});
-		
+
 	}
+
 //Creates the area where are going to be displayed the UML
 	private void createGraphViewArea(Composite viewArea) {
-		Composite graphComposite = new Composite(viewArea, SWT.BORDER);
+		graphComposite = new Composite(viewArea, SWT.BORDER);
 		graphViewArea = new GraphViewer(graphComposite, SWT.BORDER);
 		GridData gridDataFill = new GridData(SWT.FILL, SWT.FILL, true, true);
 		graphComposite.setLayoutData(gridDataFill);
@@ -112,18 +148,21 @@ public class UmlView implements PidescoView {
 		graphViewArea.getControl().setLayoutData(gridDataFill);
 		graphComposite.pack();
 		graphViewArea.applyLayout();
-		
+
 	}
 
-/*Creates the side column and the Uml Actions composite where all the buttons are displayed 
-	and checks if are clients extending the IButton extension point and creates each of them a button*/
-	private void createSideButtonsComposites(Composite viewArea) {
-		ScrolledComposite scrolledComposite = new ScrolledComposite(viewArea, SWT.V_SCROLL);
+	/*
+	 * Creates the side column and the Uml Actions composite where all the buttons
+	 * are displayed and checks if are clients extending the IButton extension point
+	 * and creates each of them a button
+	 */
+	private void createSideComposites(Composite viewArea) {
+		scrolledComposite = new ScrolledComposite(viewArea, SWT.V_SCROLL);
 		scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setExpandVertical(true);
 
-		Composite innerComposite = new Composite(scrolledComposite, SWT.NONE);
+		innerComposite = new Composite(scrolledComposite, SWT.NONE);
 		innerComposite.setLayout(new GridLayout());
 
 		buttonRow = new Group(innerComposite, SWT.NONE);
@@ -132,12 +171,16 @@ public class UmlView implements PidescoView {
 		scrolledComposite.setContent(innerComposite);
 		scrolledComposite.setMinSize(innerComposite.computeSize(35, SWT.DEFAULT));
 		scrolledComposite.setSize(50, SWT.DEFAULT);
+		createSideButtons();
 		buttonRow.pack();
 		innerComposite.pack();
 		scrolledComposite.pack();
-		
+
+	}
+
+	private void createSideButtons() {
 		IConfigurationElement[] elements = checkIButtonExtensionClients();
-		//Checking and creating buttons for each client
+		// Checking and creating buttons for each client
 		for (IConfigurationElement e : elements) {
 			String name = e.getAttribute("name");
 
@@ -152,21 +195,18 @@ public class UmlView implements PidescoView {
 							PackageElement parentPackage = action.action(currentPackage);
 							System.out.println(parentPackage);
 							listener.doubleClick(parentPackage);
-							viewArea.layout();
 							buttonRow.pack();
-							innerComposite.pack();
-							scrolledComposite.pack();
+
 						}
 
 					}
-					
 
 				});
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 			}
-		
-	}
+
+		}
 	}
 
 	private IConfigurationElement[] checkIButtonExtensionClients() {
@@ -174,9 +214,7 @@ public class UmlView implements PidescoView {
 		IConfigurationElement[] elements = reg.getConfigurationElementsFor("pt.iscte.pidesco.uml.button");
 		return elements;
 
-		
 	}
-
 
 	void addContent(List<UmlClass> umlClassList, ArrayList<Dependency> dependencyList, PackageElement currentPackage) {
 		this.umlClassList = umlClassList;
@@ -271,9 +309,9 @@ public class UmlView implements PidescoView {
 	}
 
 	public void setSelectedVariable(Variable variable, UmlClass umlClass) {
-		selectedVariable=variable;
-		selectedUmlClass=umlClass;
-		
+		selectedVariable = variable;
+		selectedUmlClass = umlClass;
+
 	}
 
 }

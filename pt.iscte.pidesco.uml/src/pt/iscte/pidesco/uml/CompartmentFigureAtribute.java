@@ -63,7 +63,7 @@ public class CompartmentFigureAtribute  extends Figure {
 	public class MouseListenerVariable implements MouseListener {
 		private Variable variable;
 		private Label variablelabel;
-		private boolean pressed;
+		private boolean isSelected;
 		private org.eclipse.swt.graphics.Color blue;
 		private org.eclipse.swt.graphics.Color black;
 		public MouseListenerVariable(Variable variable, Label variablelabel) {
@@ -72,22 +72,24 @@ public class CompartmentFigureAtribute  extends Figure {
 			black= new org.eclipse.swt.graphics.Color (device, 0, 0, 0);
 			this.variablelabel=variablelabel;
 			this.variable=variable;
-			pressed=false;
+			isSelected=false;
 			
 		}
 
 		@Override
 		public void mousePressed(MouseEvent me) {
-			if (!pressed) {
-				pressed=true;
+			if (!isSelected) {
+				//if the variable is not select highlights the label text to blue, and tells the UmlView what variable is selected
+				isSelected=true;
 				UmlView.getInstance().setSelectedVariable(variable,umlClass);
 				variablelabel.setForegroundColor(blue);
 				System.out.println(variable.toString());
 			}
 			else {
+				//if the variable is select sets the text to its original black, and sets to null the selected variable
 				variablelabel.setForegroundColor(black);
 				UmlView.getInstance().setSelectedVariable(null,null);
-				pressed=false;
+				isSelected=false;
 			}
 				
 			

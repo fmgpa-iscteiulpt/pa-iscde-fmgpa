@@ -9,6 +9,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 import pt.iscte.pidesco.codegenerator.service.CodeGeneratorServices;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 import pt.iscte.pidesco.uml.service.UmlInterfaceListener;
 import pt.iscte.pidesco.uml.service.UmlService;
@@ -19,8 +20,10 @@ public class Activator implements BundleActivator {
 	private Set<UmlInterfaceListener> listeners;
 	private ProjectBrowserServices servicesProjS;
 	private CodeGeneratorServices servicesCodeG;
+	private JavaEditorServices servicesJavaE;
 	private ServiceRegistration<?> service;
 	private UmlListener listener;
+	
 
 	static BundleContext getContext() {
 		return context;
@@ -44,17 +47,30 @@ public class Activator implements BundleActivator {
 
 		ServiceReference<ProjectBrowserServices> projS = context.getServiceReference(ProjectBrowserServices.class);
 		servicesProjS = context.getService(projS);
+		
+		ServiceReference<JavaEditorServices> javaE = context.getServiceReference(JavaEditorServices.class);
+		servicesJavaE = context.getService(javaE);
 
-		ServiceReference<CodeGeneratorServices> codeGS = context.getServiceReference(CodeGeneratorServices.class);
-		servicesCodeG = context.getService(codeGS);
+		
+		
 
 	}
 
 	public ProjectBrowserServices getServicesProjS() {
 		return servicesProjS;
 	}
+	public JavaEditorServices  getServicesJavaEditor() {
+		return servicesJavaE;
+	}
 
 	public CodeGeneratorServices getServicesCodeG() {
+		ServiceReference<CodeGeneratorServices> codeGS = context.getServiceReference(CodeGeneratorServices.class);
+		try {
+			servicesCodeG = context.getService(codeGS);
+		}
+		catch (Exception e) {
+			
+		}
 		return servicesCodeG;
 	}
 
@@ -77,18 +93,22 @@ public class Activator implements BundleActivator {
 	}
 	//Ads a UmlInterfaceListener given by a client using a UmlService
 	public void addListener(UmlInterfaceListener listener) {
+		
 		listeners.add(listener);
+		UmlView.getInstance().refresh();
 
 	}
 	
 	//Stores the UmlListener Created in the UmlView
 	public void addUmlListener(UmlListener listener) {
+		
 		this.listener = listener;
 	}
 	
 	//Removes a UmlInterfaceListener given by a client using a UmlService
 	public void removeListener(UmlInterfaceListener listener) {
 		listeners.remove(listener);
+		UmlView.getInstance().refresh();
 
 	}
 
@@ -96,5 +116,6 @@ public class Activator implements BundleActivator {
 		// TODO Auto-generated method stub
 		return listeners;
 	}
+	
 
 }

@@ -71,6 +71,7 @@ public class UmlFigure extends Figure {
 			for (UmlInterfaceListener l : Activator.getInstance().getListeners()) {
 				l.doubleClick(umlClass.getSourceElement());
 			}
+			Activator.getInstance().getServicesJavaEditor().openFile(umlClass.getSourceElement().getFile());
 			System.out.println(umlClass.getSourceElement());
 
 		}
